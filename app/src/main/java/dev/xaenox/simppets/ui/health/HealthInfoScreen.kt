@@ -27,6 +27,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,8 +40,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import dev.xaenox.simppets.data.PetsRepository
+import dev.xaenox.simppets.entities.Pet
 import dev.xaenox.simppets.ui.add_pet.TextFieldInput
-
+import kotlinx.coroutines.launch
+import kotlinx.datetime.LocalDate
 
 @Composable
 fun ScrollableContent(
@@ -109,19 +113,33 @@ fun ScrollIndicator(modifier: Modifier = Modifier, icon: ImageVector) {
 fun HealthInfoScreen(
     modifier: Modifier = Modifier
 ) {
-    var conditions by remember { mutableStateOf("") }
-    var walks by remember { mutableStateOf("") }
-    var grooming by remember { mutableStateOf("") }
-    var color by remember { mutableStateOf("") }
-    var physique by remember { mutableStateOf("") }
+    var species by remember { mutableStateOf("") }
+    var gender by remember { mutableStateOf("") }
+    var breed by remember { mutableStateOf("") }
+    var age by remember { mutableStateOf("") }
     var weight by remember { mutableStateOf("") }
+    var housing by remember { mutableStateOf("") }
+    var parks by remember { mutableStateOf("") }
+    var abroad by remember { mutableStateOf("") }
+    var sterilization by remember { mutableStateOf("") }
+    var color by remember { mutableStateOf("") }
+    var stance by remember { mutableStateOf("") }
+    var bodytype by remember { mutableStateOf("") }
+    var fatness by remember { mutableStateOf("") }
     var activity by remember { mutableStateOf("") }
     var development by remember { mutableStateOf("") }
-    var diet by remember { mutableStateOf("") }
+    var isondiet by remember { mutableStateOf("") }
     var stool by remember { mutableStateOf("") }
     var meat by remember { mutableStateOf("") }
     var feeding by remember { mutableStateOf("") }
-    var seizures by remember { mutableStateOf("") }
+    var convulsions by remember { mutableStateOf("") }
+    var lungdisease by remember { mutableStateOf("") }
+    var heartdisease by remember { mutableStateOf("") }
+    var temperature by remember { mutableStateOf("") }
+    var appetite by remember { mutableStateOf("") }
+    var vomit by remember { mutableStateOf("") }
+    var diarrhea by remember { mutableStateOf("") }
+    var urination by remember { mutableStateOf("") }
 
     val scrollState = rememberScrollState()
 
@@ -161,21 +179,57 @@ fun HealthInfoScreen(
                 Modifier.fillMaxWidth()
             ) {
                 TextFieldInput(
-                    value = conditions,
-                    onValueChange = { conditions = it },
-                    label = "Условия содержания",
+                    value = species,
+                    onValueChange = { species = it },
+                    label = "Вид",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
-                    value = walks,
-                    onValueChange = { walks = it },
-                    label = "Прогулки",
+                    value = gender,
+                    onValueChange = { gender = it },
+                    label = "Пол",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
-                    value = grooming,
-                    onValueChange = { grooming = it },
-                    label = "Холощение",
+                    value = breed,
+                    onValueChange = { breed = it },
+                    label = "Порода",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = age,
+                    onValueChange = { age = it },
+                    label = "Возраст",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = weight,
+                    onValueChange = { weight = it },
+                    label = "Вес",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = housing,
+                    onValueChange = { housing = it },
+                    label = "Содержание",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = parks,
+                    onValueChange = { parks = it },
+                    label = "Постоянные прогулки в парках",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = abroad,
+                    onValueChange = { abroad = it },
+                    label = "Перемещение за границу в теч. последнего года",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = sterilization,
+                    onValueChange = { sterilization = it },
+                    label = "Кастрация/Стерилизация",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
@@ -185,61 +239,112 @@ fun HealthInfoScreen(
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
-                    value = physique,
-                    onValueChange = { physique = it },
+                    value = stance,
+                    onValueChange = { stance = it },
+                    label = "Положение тела",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = bodytype,
+                    onValueChange = { bodytype = it },
                     label = "Телосложение",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
-                    value = weight,
-                    onValueChange = { weight = it },
+                    value = fatness,
+                    onValueChange = { fatness = it },
                     label = "Упитанность",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
                     value = activity,
                     onValueChange = { activity = it },
-                    label = "Активность",
+                    label = "Изменение физической активности",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
                     value = development,
                     onValueChange = { development = it },
-                    label = "Развитие",
+                    label = "Характер роста и развития",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
-                    value = diet,
-                    onValueChange = { diet = it },
-                    label = "Диета",
+                    value = isondiet,
+                    onValueChange = { isondiet = it },
+                    label = "Диетическое кормление",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
                     value = stool,
                     onValueChange = { stool = it },
-                    label = "Стул",
+                    label = "Консистенция стула",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
                     value = meat,
                     onValueChange = { meat = it },
-                    label = "Мясо",
+                    label = "Содержание мяса в рационе",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
                     value = feeding,
                     onValueChange = { feeding = it },
-                    label = "Кормление",
+                    label = "Характер кормления",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
                 TextFieldInput(
-                    value = seizures,
-                    onValueChange = { seizures = it },
+                    value = convulsions,
+                    onValueChange = { convulsions = it },
                     label = "Судороги",
                     modifier = Modifier.padding(bottom = 16.dp)
                 )
+                TextFieldInput(
+                    value = lungdisease,
+                    onValueChange = { lungdisease = it },
+                    label = "Болезни легких",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = heartdisease,
+                    onValueChange = { heartdisease = it },
+                    label = "Болезни сердца",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = temperature,
+                    onValueChange = { temperature = it },
+                    label = "Температура",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = appetite,
+                    onValueChange = { appetite = it },
+                    label = "Аппетит",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = vomit,
+                    onValueChange = { vomit = it },
+                    label = "Рвота",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = diarrhea,
+                    onValueChange = { diarrhea = it },
+                    label = "Диарея",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                TextFieldInput(
+                    value = urination,
+                    onValueChange = { urination = it },
+                    label = "Мочеиспускание",
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+
             }
         }
+
+        val scope = rememberCoroutineScope()
 
         Box(
             modifier = Modifier
@@ -247,7 +352,45 @@ fun HealthInfoScreen(
                 .fillMaxWidth()
         ) {
             Button(
-                onClick = { /* handle dialog confirm button click */ },
+                onClick = {
+                    scope.launch {
+                        try {
+                            PetsRepository.analyzeHealthInfo(
+                                Pet.HealthInfo(
+                                    species = species,
+                                    gender = gender,
+                                    breed = breed,
+                                    birthDate = LocalDate.parse(age),
+                                    weight = weight.toFloat(),
+                                    housing = housing,
+                                    parks = parks,
+                                    abroad = abroad,
+                                    sterilization = sterilization,
+                                    color = color,
+                                    stance = stance,
+                                    bodytype = bodytype,
+                                    fatness = fatness,
+                                    activity = activity,
+                                    development = development,
+                                    isondiet = isondiet,
+                                    stool = stool,
+                                    meat = meat,
+                                    feeding = feeding,
+                                    convulsions = convulsions,
+                                    lungdisease = lungdisease,
+                                    heartdisease = heartdisease,
+                                    temperature = temperature.toFloat(),
+                                    appetite = appetite,
+                                    vomit = vomit,
+                                    diarrhea = diarrhea,
+                                    urination = urination
+                                )
+                            )
+                        } catch (e: Exception) {
+                            println(e)
+                        }
+                    }
+                },
                 modifier = Modifier
                     .padding(8.dp)
                     .fillMaxWidth()

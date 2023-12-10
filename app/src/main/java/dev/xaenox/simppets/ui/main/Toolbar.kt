@@ -5,14 +5,17 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -21,13 +24,14 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import dev.xaenox.simppets.navigation.Navigator
 
 @Composable
 fun Toolbar(
-    name: String,
-    profileImageUri: Uri,
     modifier: Modifier = Modifier,
-    onSettingsClick: () -> Unit
+    backgroundGradient: List<Color> = listOf(Color(0xFFF6DBD0), Color(0xFFFAD4E1)),
+    buttons: @Composable ColumnScope.() -> Unit,
+    content: @Composable ColumnScope.() -> Unit = {}
 ) {
     Surface(
         modifier = modifier,
@@ -37,7 +41,7 @@ fun Toolbar(
     ) {
         Box(modifier = Modifier) {
             HorizontalGradient(
-                listOfColors = listOf(Color(0xFFF6DBD0), Color(0xFFFAD4E1)),
+                listOfColors = backgroundGradient,
                 modifier = Modifier.matchParentSize()
             )
 
@@ -46,20 +50,36 @@ fun Toolbar(
                     .fillMaxWidth()
                     .padding(horizontal = 40.dp, vertical = 16.dp)
             ) {
-                Icon(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .align(Alignment.End)
-                        .clickable { onSettingsClick() },
-                    imageVector = Icons.Outlined.Settings,
-                    contentDescription = "Settings Button",
-                    tint = Color(0xCCFFFFFF)
-                )
-
-                HelloWidget(name, profileImageUri, Modifier.fillMaxWidth())
+                buttons()
+                content()
             }
         }
     }
+}
+
+
+@Composable
+fun ColumnScope.BackButton(onClick: () -> Unit = { Navigator.navigateBack() }) {
+    IconButton(
+        onClick = { onClick() }, modifier = Modifier
+            .size(32.dp)
+            .align(Alignment.Start)
+    ) {
+        Icon(Icons.Default.ArrowBack, contentDescription = "Go back")
+    }
+}
+
+@Composable
+fun ColumnScope.SettingsButton(onClick: () -> Unit) {
+    Icon(
+        modifier = Modifier
+            .size(32.dp)
+            .align(Alignment.End)
+            .clickable { onClick() },
+        imageVector = Icons.Outlined.Settings,
+        contentDescription = "Settings Button",
+        tint = Color(0xCCFFFFFF)
+    )
 }
 
 @Composable
@@ -81,6 +101,10 @@ fun HorizontalGradient(
 @Composable
 private fun ToolbarPreview() {
     Box(modifier = Modifier.fillMaxSize()) {
-        Toolbar("Name", Uri.EMPTY) {}
+        Toolbar(
+            buttons = { SettingsButton {} }
+        ) {
+            HelloWidget("Name", Uri.EMPTY, Modifier.fillMaxWidth())
+        }
     }
 }
